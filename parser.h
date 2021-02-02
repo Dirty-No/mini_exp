@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/28 14:57:30 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/01 15:32:06 by smaccary         ###   ########.fr       */
+/*   Updated: 2021/02/02 15:57:39 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,11 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <signal.h>
 
 typedef struct s_command
 {
     char    *cmd;
-    int     argc;
     char    **argv;
     int     fd_output;
     int     fd_input;
