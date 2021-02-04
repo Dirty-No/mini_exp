@@ -6,11 +6,12 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/01 13:16:41 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/02 16:24:49 by smaccary         ###   ########.fr       */
+/*   Updated: 2021/02/04 12:43:40 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
+
 
 int			tokens_len(char **tokens)
 {
@@ -20,6 +21,15 @@ int			tokens_len(char **tokens)
 	while (*current)
 		current++;
 	return (current - tokens);
+}
+
+t_command	*new_command(char *cmd, char **argv, int fd_in, int fd_out)
+{
+	t_command	*new;
+
+	new = malloc(sizeof(t_command));
+	*new = (t_command){cmd, argv, fd_in, fd_out};
+	return (new);
 }
 
 static void	dup2_check(int fd_src, int fd_dst)
@@ -45,6 +55,41 @@ int			exec_command(t_command *command)
 	}
 	return (pid);
 }
+
+int			is_sep(char *token)
+{
+	ssize_t i;
+
+	i = -1;
+	while (SEPARATORS[++i])
+	{
+		if (ft_strcmp(SEPARATORS[i], token))
+			return (1);
+	}
+	return (0);
+}
+
+int		count_cmd(char **tokens)
+{
+	int		count;
+	char	*current;
+
+	
+}
+
+char	***parse_list(char **tokens)
+{
+	
+}
+
+t_list *get_command_list(char **tokens)
+{
+	t_list 		*lst;
+	t_command	*cmd;
+	
+	
+}
+
 /*
 int	fork_pipes (int n, t_command *cmd)
 {

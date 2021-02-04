@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/28 14:57:30 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/02 15:57:39 by smaccary         ###   ########.fr       */
+/*   Updated: 2021/02/04 12:42:06 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,9 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <signal.h>
+#include "libft.h"
+
+#define SEPARATORS (char *[]){">>", "<", ">", "|", ";", NULL}
 
 typedef struct s_command
 {
