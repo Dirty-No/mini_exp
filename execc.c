@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/01 13:16:41 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/04 12:43:40 by smaccary         ###   ########.fr       */
+/*   Updated: 2021/02/04 16:35:11 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ int			is_sep(char *token)
 	i = -1;
 	while (SEPARATORS[++i])
 	{
-		if (ft_strcmp(SEPARATORS[i], token))
+		if (ft_strcmp(SEPARATORS[i], token) == 0)
 			return (1);
 	}
 	return (0);
@@ -72,16 +72,47 @@ int			is_sep(char *token)
 int		count_cmd(char **tokens)
 {
 	int		count;
-	char	*current;
+	char	**current;
 
-	
+	current = tokens;
+	count = 1;
+	while (*current)
+	{
+		if (is_sep(*current))
+			count++;
+		current++;	
+	}
+	return (count);
 }
 
-char	***parse_list(char **tokens)
+
+t_command	*get_next_command(char **tokens)
 {
+	static char	**current = NULL;
+	static char **tokens_start = NULL;
 	
+	if (tokens != tokens_start)
+	{
+		tokens_start = tokens;
+		current = tokens;
+	}
+	return (NULL);
 }
 
+t_list	*parse_list(char **tokens)
+{
+	t_command	*command;
+	t_list		*lst;
+	
+	lst = NULL;
+	while ((command = get_next_command(&tokens)))
+		ft_lstadd_back(&lst, command);
+	return (lst);
+}
+
+
+
+/*
 t_list *get_command_list(char **tokens)
 {
 	t_list 		*lst;
@@ -89,6 +120,7 @@ t_list *get_command_list(char **tokens)
 	
 	
 }
+*/
 
 /*
 int	fork_pipes (int n, t_command *cmd)
@@ -114,12 +146,22 @@ int	fork_pipes (int n, t_command *cmd)
 }
 */
 
-
+/*
 int main(void)
 {
 	char *tokens[] = {NULL};
 
 	printf("len:%d\n", tokens_len(tokens));
+	return (0);
+}
+*/
+
+int main(void)
+{
+	char *tokens[] = {"echo", "hello", "world", "|", "grep", "world", NULL};
+	char *tokens1[] = {"echo", "hello", "world", NULL};
+
+	printf("cmd count: %d\n", count_cmd(tokens1));
 	return (0);
 }
 
