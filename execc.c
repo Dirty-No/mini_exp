@@ -6,14 +6,25 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/01 13:16:41 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/04 16:35:11 by smaccary         ###   ########.fr       */
+/*   Updated: 2021/02/07 13:12:09 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
 
+size_t
+	tab_size(char **table)
+{
+	char **current;
 
-int			tokens_len(char **tokens)
+	current = table;
+	while (*current)
+		current++;
+	return (current - table);		
+}
+
+int
+	tokens_len(char **tokens)
 {
 	char **current;
 
@@ -23,7 +34,8 @@ int			tokens_len(char **tokens)
 	return (current - tokens);
 }
 
-t_command	*new_command(char *cmd, char **argv, int fd_in, int fd_out)
+t_command
+	*new_command(char *cmd, char **argv, int fd_in, int fd_out)
 {
 	t_command	*new;
 
@@ -32,7 +44,14 @@ t_command	*new_command(char *cmd, char **argv, int fd_in, int fd_out)
 	return (new);
 }
 
-static void	dup2_check(int fd_src, int fd_dst)
+t_command
+	*command_from_argv(char **argv)
+{
+	return (new_command(ft_strdup(argv[0]), argv, -1, -1));
+}
+
+static void
+	dup2_check(int fd_src, int fd_dst)
 {
 	if (fd_src != fd_dst)
 	{
@@ -41,7 +60,8 @@ static void	dup2_check(int fd_src, int fd_dst)
 	}
 }
 
-int			exec_command(t_command *command)
+int
+	exec_command(t_command *command)
 {
 	extern char **environ;
 	pid_t	    pid;
@@ -63,13 +83,31 @@ int			is_sep(char *token)
 	i = -1;
 	while (SEPARATORS[++i])
 	{
-		if (ft_strcmp(SEPARATORS[i], token) == 0)
+		if (!token || ft_strcmp(SEPARATORS[i], token) == 0)
 			return (1);
 	}
 	return (0);
 }
 
-int		count_cmd(char **tokens)
+char
+	**dup_n_tab(char **table, size_t n)
+{
+	char	**dup;
+	int		size;
+	int		i;
+
+	size = tab_size(table);
+	if (n < size)
+		size = n;
+	dup = ft_calloc(sizeof(char *), size + 1);
+	i = -1;
+	while (++i < size)
+		dup[i] = ft_strdup(table[i]);
+	return (dup);
+}
+
+int
+	count_cmd(char **tokens)
 {
 	int		count;
 	char	**current;
@@ -85,18 +123,38 @@ int		count_cmd(char **tokens)
 	return (count);
 }
 
+int
+	get_argv_len(char **tokens)
+{
+	char **current;
+	
+	current = tokens;
+	while (!is_sep(*current))
+		current++;
+	return (current - tokens);
+}
 
-t_command	*get_next_command(char **tokens)
+t_command
+	*get_next_command(char **tokens)
 {
 	static char	**current = NULL;
 	static char **tokens_start = NULL;
-	
+	int			end;
+	t_command	*command;
+
 	if (tokens != tokens_start)
 	{
 		tokens_start = tokens;
 		current = tokens;
 	}
-	return (NULL);
+	if (current == NULL || *current == NULL)
+		return (NULL);
+	end = get_argv_len(current);
+	command = command_from_argv(dup_n_tab(current, end));
+	current += end;
+	if (*current)
+		current++;
+	return (command);
 }
 
 t_list	*parse_list(char **tokens)
@@ -105,12 +163,10 @@ t_list	*parse_list(char **tokens)
 	t_list		*lst;
 	
 	lst = NULL;
-	while ((command = get_next_command(&tokens)))
+	while ((command = get_next_command(tokens)))
 		ft_lstadd_back(&lst, command);
 	return (lst);
 }
-
-
 
 /*
 t_list *get_command_list(char **tokens)
@@ -156,12 +212,23 @@ int main(void)
 }
 */
 
+void	print_argv(char **argv)
+{
+	while (*argv)
+	{
+		puts
+	}
+	
+}
+
 int main(void)
 {
 	char *tokens[] = {"echo", "hello", "world", "|", "grep", "world", NULL};
 	char *tokens1[] = {"echo", "hello", "world", NULL};
+	t_list	*lst;
 
-	printf("cmd count: %d\n", count_cmd(tokens1));
+	//printf("cmd count: %d\n", count_cmd(tokens1));
+	lst = parse_list(tokens);
 	return (0);
 }
 
