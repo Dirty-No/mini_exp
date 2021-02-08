@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/01 13:16:41 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/08 15:39:03 by smaccary         ###   ########.fr       */
+/*   Updated: 2021/02/08 16:03:22 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,15 +50,7 @@ t_command
 	return (new_command(ft_strdup(argv[0]), argv, sep));
 }
 
-static void
-	dup2_check(int fd_src, int fd_dst)
-{
-	if (fd_src != fd_dst)
-	{
-		dup2(fd_src, fd_dst);
-		close(fd_src);
-	}
-}
+
 
 
 
@@ -212,7 +204,7 @@ void	print_argv(char **argv)
 		printf("%s", "{");
 		while (*argv)
 		{
-			printf("%s", *argv);
+			printf("\"%s\"", *argv);
 			argv++;
 			if (*argv)
 				printf("%s", ", ");
@@ -226,11 +218,11 @@ void	print_command(t_command *command)
 	printf("%p:\n", command);
 	if (command)
 	{
-		printf("cmd: %s\n", command->cmd);
-		printf("%s", "argv: ");
+		printf("  - %-10s\"%s\"\n", "cmd:", command->cmd);
+		printf("  - %-10s", "argv:");
 		print_argv(command->argv);
-		printf("input: %d\noutput: %d\n", command->fd_input, command->fd_output);
-		printf("sep: %s\n\n", command->sep);
+		printf("  - %-10s%d\n  - %-10s%d\n", "input:", command->fd_input, "output:", command->fd_output);
+		printf("  - %-10s\"%s\"\n\n", "sep:", command->sep);
 	}
 }
 

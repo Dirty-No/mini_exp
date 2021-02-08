@@ -1,5 +1,15 @@
 #include "parser.h"
 
+static void
+	dup2_check(int fd_src, int fd_dst)
+{
+	if (fd_src != fd_dst)
+	{
+		dup2(fd_src, fd_dst);
+		close(fd_src);
+	}
+}
+
 int
 	exec_command(t_command *command)
 {
