@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/01 13:16:41 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/08 11:30:15 by smaccary         ###   ########.fr       */
+/*   Updated: 2021/02/08 14:01:16 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,19 +35,19 @@ int
 }
 
 t_command
-	*new_command(char *cmd, char **argv, int fd_in, int fd_out)
+	*new_command(char *cmd, char **argv, char *sep)
 {
 	t_command	*new;
 
 	new = malloc(sizeof(t_command));
-	*new = (t_command){cmd, argv, fd_in, fd_out};
+	*new = (t_command){cmd, argv, sep, 0, 1};
 	return (new);
 }
 
 t_command
-	*command_from_argv(char **argv)
+	*command_from_argv(char **argv, char *sep)
 {
-	return (new_command(ft_strdup(argv[0]), argv, -1, -1));
+	return (new_command(ft_strdup(argv[0]), argv, sep));
 }
 
 static void
@@ -123,15 +123,21 @@ int
 	return (count);
 }
 
-int
-	get_argv_len(char **tokens)
+char
+	**find_sep(char **tokens)
 {
 	char **current;
 	
 	current = tokens;
 	while (!is_sep(*current))
 		current++;
-	return (current - tokens);
+	return (current);
+}
+
+int
+	get_argv_len(char **tokens)
+{
+	return (find_sep(tokens) - tokens);
 }
 
 t_command
@@ -150,7 +156,7 @@ t_command
 	if (current == NULL || *current == NULL)
 		return (NULL);
 	end = get_argv_len(current);
-	command = command_from_argv(dup_n_tab(current, end));
+	command = command_from_argv(dup_n_tab(current, end), *find_sep(tokens));
 	current += end;
 	if (*current)
 		current++;
@@ -237,7 +243,8 @@ void	print_command(t_command *command)
 		printf("cmd: %s\n", command->cmd);
 		printf("%s", "argv: ");
 		print_argv(command->argv);
-		printf("input: %d\noutput: %d\n\n", command->fd_input, command->fd_output);
+		printf("input: %d\noutput: %d\n", command->fd_input, command->fd_output);
+		printf("sep: %s\n\n", command->sep);
 	}
 }
 
@@ -248,12 +255,13 @@ void	print_cmd_lst(t_list *lst)
 
 int main(void)
 {
-	char *tokens[] = {"echo", "hello", "world", "|", "grep", "world", NULL};
+	char *tokens_pipe[] = {"echo", "hello", "world", "|", "grep", "world", NULL};
+	char *tokens_redir[] = {"echo", "hello", "world", ">", "text.txt", NULL};
 	char *tokens1[] = {"echo", "hello", "world", NULL};
 	t_list	*lst;
 
 	//printf("cmd count: %d\n", count_cmd(tokens1));
-	lst = parse_list(tokens);
+	lst = parse_list(tokens_redir);
 	print_cmd_lst(lst);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/28 14:57:30 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/07 12:54:49 by smaccary         ###   ########.fr       */
+/*   Updated: 2021/02/08 12:19:57 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ typedef struct s_command
 {
     char    *cmd;
     char    **argv;
+    char    *sep;
     int     fd_output;
     int     fd_input;
 }               t_command;
