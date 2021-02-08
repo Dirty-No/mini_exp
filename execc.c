@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/01 13:16:41 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/07 13:12:09 by smaccary         ###   ########.fr       */
+/*   Updated: 2021/02/08 11:30:15 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,11 +214,36 @@ int main(void)
 
 void	print_argv(char **argv)
 {
-	while (*argv)
+	printf("%p -> ", argv);
+	if (argv && *argv)
 	{
-		puts
+		printf("%s", "{");
+		while (*argv)
+		{
+			printf("%s", *argv);
+			argv++;
+			if (*argv)
+				printf("%s", ", ");
+		}
+		printf("%s", "}\n");
+	}	
+}
+
+void	print_command(t_command *command)
+{
+	printf("%p:\n", command);
+	if (command)
+	{
+		printf("cmd: %s\n", command->cmd);
+		printf("%s", "argv: ");
+		print_argv(command->argv);
+		printf("input: %d\noutput: %d\n\n", command->fd_input, command->fd_output);
 	}
-	
+}
+
+void	print_cmd_lst(t_list *lst)
+{
+	ft_lstiter(lst, print_command);
 }
 
 int main(void)
@@ -229,6 +254,7 @@ int main(void)
 
 	//printf("cmd count: %d\n", count_cmd(tokens1));
 	lst = parse_list(tokens);
+	print_cmd_lst(lst);
 	return (0);
 }
 
