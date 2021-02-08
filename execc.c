@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/01 13:16:41 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/08 14:01:16 by smaccary         ###   ########.fr       */
+/*   Updated: 2021/02/08 14:17:18 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,7 @@ t_command
 	if (current == NULL || *current == NULL)
 		return (NULL);
 	end = get_argv_len(current);
-	command = command_from_argv(dup_n_tab(current, end), *find_sep(tokens));
+	command = command_from_argv(dup_n_tab(current, end), *find_sep(current));
 	current += end;
 	if (*current)
 		current++;
@@ -250,18 +250,20 @@ void	print_command(t_command *command)
 
 void	print_cmd_lst(t_list *lst)
 {
-	ft_lstiter(lst, print_command);
+	ft_lstiter(lst, (void *)print_command);
 }
 
 int main(void)
 {
 	char *tokens_pipe[] = {"echo", "hello", "world", "|", "grep", "world", NULL};
 	char *tokens_redir[] = {"echo", "hello", "world", ">", "text.txt", NULL};
+	char *tokens_mega[] = {"echo", "hello", "world", "|", "grep", "world", "|", "grep", "-o", "wo", ">", "text.txt", NULL};
+	char *tokens_mega1[] = {"echo", "hello", "world", "|", "grep", "world", "|", "grep", "-o", "wo", ">", "text1.txt", ">", "text2.txt", ">", "text3.txt", NULL};
 	char *tokens1[] = {"echo", "hello", "world", NULL};
 	t_list	*lst;
 
 	//printf("cmd count: %d\n", count_cmd(tokens1));
-	lst = parse_list(tokens_redir);
+	lst = parse_list(tokens_mega1);
 	print_cmd_lst(lst);
 	return (0);
 }
