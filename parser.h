@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/28 14:57:30 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/08 12:19:57 by smaccary         ###   ########.fr       */
+/*   Updated: 2021/02/11 16:42:22 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,9 @@
 #include "libft.h"
 
 #define SEPARATORS (char *[]){">>", "<", ">", "|", ";", NULL}
+#define REDIRECTS (char *[]){">>", "<", ">", NULL}
+
+
 
 typedef struct s_command
 {
