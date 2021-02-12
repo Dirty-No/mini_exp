@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/28 14:57:30 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/11 16:42:22 by root             ###   ########.fr       */
+/*   Updated: 2021/02/12 16:52:38 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,21 @@
 #include <signal.h>
 #include "libft.h"
 
-#define SEPARATORS (char *[]){">>", "<", ">", "|", ";", NULL}
-#define REDIRECTS (char *[]){">>", "<", ">", NULL}
+#define REDIR_REPLACE ">"
+#define REDIR_APPEND ">>"
+#define REDIR_INPUT "<"
+#define PIPE "|"
+#define SEMICOLON ";"
 
+
+#define SEPARATORS (char *[]){REDIR_REPLACE, REDIR_APPEND, REDIR_INPUT, PIPE, SEMICOLON, NULL}
+#define REDIRECTS (char *[]){REDIR_REPLACE, REDIR_APPEND, REDIR_INPUT, NULL}
+#define OUTPUT_REDIRECTS (char *[]){REDIR_REPLACE, REDIR_APPEND, NULL}
+#define INPUT_REDIRECTS (char *[]){REDIR_INPUT, NULL}
+
+#define OUTPUT_REPLACE_MASK 0b001
+#define OUTPUT_APPEND_MASK  0b010
+#define INPUT_REDIRECT_MASK 0b100
 
 
 typedef struct s_command

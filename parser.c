@@ -3,14 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/01 13:16:41 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/11 18:31:21 by root             ###   ########.fr       */
+/*   Updated: 2021/02/12 17:14:16 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
+
+size_t
+	get_argv_len(char **tokens);
 
 size_t
 	tab_size(char **table)
@@ -39,24 +42,79 @@ t_command
 	return (new_command(ft_strdup(argv[0]), argv, sep));
 }
 
-int
-	find_token(char *token, char **tokens_table)
+char
+	**find_token(char *token, char **tokens_table)
 {
 	ssize_t i;
 
 	i = -1;
+	if (!token)
+		return (tokens_table + get_argv_len(tokens_table));
 	while (tokens_table[++i])
 	{
-		if (!token || ft_strcmp(tokens_table[i], token) == 0)
-			return (1);
+		if (ft_strcmp(tokens_table[i], token) == 0)
+			return (tokens_table + i);
 	}
-	return (0);
+	return (NULL);
+}
+
+char
+	**find_last_token(char *token, char **tokens_table)
+{
+	ssize_t i;
+	char	**last;
+
+	i = -1;
+	last = NULL;
+	if (!token)
+		return (tokens_table + get_argv_len(tokens_table));
+	while (tokens_table[++i])
+	{
+		if (ft_strcmp(tokens_table[i], token) == 0)
+			last = tokens_table + i;
+	}
+	return (last);
+}
+
+char
+	**tab_find_last_token(char **tokens, char **tokens_table)
+{
+	ssize_t i;
+	char	**last;
+	char	**current;
+
+	i = -1;
+	last = NULL;
+	while (tokens[++i])
+	{
+		current = find_last_token(tokens[i], tokens_table);
+		if (current > last)
+			last = current;
+	}
+	return (last);
 }
 
 int
 	is_sep(char *token)
 {
-	return (find_token(token, SEPARATORS));
+	return ((int)find_token(token, SEPARATORS));
+}
+
+char
+	**find_sep(char **tokens)
+{
+	char **current;
+	
+	current = tokens;
+	while (!is_sep(*current))
+		current++;
+	return (current);
+}
+
+size_t
+	get_argv_len(char **tokens)
+{
+	return (find_sep(tokens) - tokens);
 }
 
 char
@@ -93,22 +151,7 @@ int
 	return (count);
 }
 
-char
-	**find_sep(char **tokens)
-{
-	char **current;
-	
-	current = tokens;
-	while (!is_sep(*current))
-		current++;
-	return (current);
-}
 
-int
-	get_argv_len(char **tokens)
-{
-	return (find_sep(tokens) - tokens);
-}
 
 t_command
 	*get_next_command(char **tokens)
@@ -229,7 +272,7 @@ void
 
 int	is_redirect(char *token)
 {
-	return (find_token(token, REDIRECTS));
+	return ((int)find_token(token, REDIRECTS));
 }
 
 size_t
@@ -293,16 +336,16 @@ size_t
 	return (len);
 }
 
-int
-	ref_in_tokens(char *ref, char **tokens)
+char
+	**ref_in_tokens(char *ref, char **tokens)
 {
 	while (*tokens)
 	{
 		if (ref == *tokens)
-			return (1);
+			return (tokens);
 		tokens++;
 	}
-	return (0);		
+	return (NULL);		
 }
 
 /*
@@ -333,23 +376,75 @@ char
 	return (pure_tokens);
 }
 
+
+/*
+** Parse redirects tokens, opens files and assign them accordingly to fd_input/output ( input : "<", output: ">") 
+** Returns redirection status as a binary mask (replace = 001 | append = 010 | input = 100)
+*/
+
+int
+	redirects_to_fds(char **redirects, int *fd_input, int *fd_output)
+{
+	char	**input_path_ptr;
+	char	**output_path_ptr;
+	int		mode;
+	int		open_mode;
+	
+
+	output_path_ptr = tab_find_last_token(OUTPUT_REDIRECTS, redirects);
+	mode = 0;
+	open_mode = O_WRONLY | O_CREAT;
+	if (output_path_ptr && *output_path_ptr && *(output_path_ptr + 1) && !is_sep(*(output_path_ptr + 1)))
+	{
+		mode |= (int)ft_strlen(*output_path_ptr);
+		if (mode == 2)
+			open_mode |= O_APPEND;
+		*fd_output = open(*(output_path_ptr + 1), open_mode, );
+	}
+	input_path_ptr = tab_find_last_token(INPUT_REDIRECTS, redirects);
+	if (input_path_ptr && *input_path_ptr && *(input_path_ptr + 1) && !is_sep(*(input_path_ptr + 1)))
+	{
+		mode |= INPUT_REDIRECT_MASK;
+		*fd_input = open(*(input_path_ptr + 1), O_RDONLY);
+	}
+	return (mode);
+}
+
+
 int
 	main(int ac, char *argv[])
 {
 	//char *tokens_pipe[] = {"echo", "hello", "world", "|", "grep", "world", NULL};
-	//char *tokens_redir[] = {"echo", "hello", "world", ">", "text.txt", NULL};
+	char *tokens_redir[] = {"echo", "hello", "world", ">", "text.txt", NULL};
+	//char *tokens_mult_redir[] = {"echo", "hello", "world", ">", "text.txt", ">", "text2.txt", ">", "text3.txt", "<", "input.txt", NULL};
+	//char *tokens_redir_middle[] = {"echo", "hello", ">", "fuck me", "<", "kill me", "world", ">", "text.txt", ">", "text2.txt", ">", "text3.txt", "<", "input.txt", NULL};
+
 	//char *tokens_mega[] = {"echo", "hello", "world", "|", "grep", "world", "|", "grep", "-o", "wo", ">", "text.txt", NULL};
 	//char *tokens_mega1[] = {"echo", "hello", "world", "|", "grep", "world", "|", "grep", "-o", "wo", ">", "text1.txt", ">", "text2.txt", ">", "text3.txt", NULL};
-	char *tokens1[] = {"echo", "hello", "world", NULL};
+	//char *tokens1[] = {"echo", "hello", "world", NULL};
 	t_list	*lst;
 	char	**tokens;
 	char	**pure_tokens;
+	char	**redirections;
+	int		fd_input = -2;
+	int		fd_output = -2;
 	
-	tokens = argv + 1;
-	//tokens = tokens1;
+	(void)ac;
+	(void)argv;
+	//tokens = argv + 1;
+	tokens = tokens_redir;
 	pure_tokens = get_pure_tokens(tokens);
 	lst = parse_list(pure_tokens);
 	print_cmd_lst(lst);
+
+	redirections = extract_redirects(tokens);
+	
+	print_argv(redirections);
+	
+	redirects_to_fds(redirections, &fd_input, &fd_output);
+	dup2(fd_output, 1);
+	printf("hello world !\n");
+	close(fd_output);
 	return (0);
 }
 
