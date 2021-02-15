@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/01 13:16:41 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/12 17:14:16 by smaccary         ###   ########.fr       */
+/*   Updated: 2021/02/15 14:05:51 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,6 +248,7 @@ void
 		}
 		printf("%s", "}\n");
 	}	
+	fflush(stdout);
 }
 
 void
@@ -262,6 +263,7 @@ void
 		printf("  - %-10s%d\n  - %-10s%d\n", "input:", command->fd_input, "output:", command->fd_output);
 		printf("  - %-10s\"%s\"\n\n", "sep:", command->sep);
 	}
+	fflush(stdout);
 }
 
 void
@@ -397,9 +399,11 @@ int
 	if (output_path_ptr && *output_path_ptr && *(output_path_ptr + 1) && !is_sep(*(output_path_ptr + 1)))
 	{
 		mode |= (int)ft_strlen(*output_path_ptr);
-		if (mode == 2)
+		if (mode == 1)
+			open_mode |= O_TRUNC;
+		else if (mode == 2)
 			open_mode |= O_APPEND;
-		*fd_output = open(*(output_path_ptr + 1), open_mode, );
+		*fd_output = open(*(output_path_ptr + 1), open_mode, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	}
 	input_path_ptr = tab_find_last_token(INPUT_REDIRECTS, redirects);
 	if (input_path_ptr && *input_path_ptr && *(input_path_ptr + 1) && !is_sep(*(input_path_ptr + 1)))
@@ -410,12 +414,18 @@ int
 	return (mode);
 }
 
+sig_t blank(int a)
+{
+	(void)a;
+	write(1, "\n", 1);
+	return (NULL);
+}
 
 int
 	main(int ac, char *argv[])
 {
 	//char *tokens_pipe[] = {"echo", "hello", "world", "|", "grep", "world", NULL};
-	char *tokens_redir[] = {"echo", "hello", "world", ">", "text.txt", NULL};
+	char *tokens_redir[] = {"echo", "hello", "world", ">>", "text.txt", NULL};
 	//char *tokens_mult_redir[] = {"echo", "hello", "world", ">", "text.txt", ">", "text2.txt", ">", "text3.txt", "<", "input.txt", NULL};
 	//char *tokens_redir_middle[] = {"echo", "hello", ">", "fuck me", "<", "kill me", "world", ">", "text.txt", ">", "text2.txt", ">", "text3.txt", "<", "input.txt", NULL};
 
@@ -431,8 +441,9 @@ int
 	
 	(void)ac;
 	(void)argv;
-	//tokens = argv + 1;
-	tokens = tokens_redir;
+	
+	tokens = argv + 1;
+	//tokens = tokens_redir;
 	pure_tokens = get_pure_tokens(tokens);
 	lst = parse_list(pure_tokens);
 	print_cmd_lst(lst);
@@ -442,8 +453,9 @@ int
 	print_argv(redirections);
 	
 	redirects_to_fds(redirections, &fd_input, &fd_output);
+
 	dup2(fd_output, 1);
-	printf("hello world !\n");
+	printf("hello world\n");
 	close(fd_output);
 	return (0);
 }
@@ -455,7 +467,7 @@ int main(void)
 	pid_t		pid;
 
 	command.argv = (char *[]){"cat", NULL};
-	command.cmd = "/bin/cat";
+vi 	command.cmd = "/bin/cat";
 	command.fd_input = 0;
 	command.fd_output = 1;
 	pid = exec_command(&command);
