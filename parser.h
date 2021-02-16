@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/28 14:57:30 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/16 15:23:50 by smaccary         ###   ########.fr       */
+/*   Updated: 2021/02/16 15:40:19 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,16 @@ t_command		*command_from_argv(char **argv, char *sep);
 char			**find_token(char *token, char **tokens_table);
 char			**find_last_token(char *token, char **tokens_table);
 char			**tab_find_last_token(char **tokens, char **tokens_table);
+char			**get_pure_tokens(char **tokens);
 int				is_sep(char *token);
 char			**find_sep(char **tokens);
 char			**dup_n_tab(char **table, size_t n);
 
+t_list			*parse_list(char **tokens);
+char			**extract_redirects(char **tokens);
+
+int				redirects_to_fds(char **redirects, int *fd_input, int *fd_output);
+	
 void			print_cmd_lst(t_list *lst);
 void			print_command(t_command *command);
 void			print_argv(char **argv);

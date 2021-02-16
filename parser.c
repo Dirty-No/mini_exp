@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/01 13:16:41 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/16 15:17:58 by smaccary         ###   ########.fr       */
+/*   Updated: 2021/02/16 15:36:23 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,16 +62,6 @@ t_list
 		ft_lstadd_back(&lst, command);
 	return (lst);
 }
-
-/*
-t_list *get_command_list(char **tokens)
-{
-	t_list 		*lst;
-	t_command	*cmd;
-	
-	
-}
-*/
 
 /*
 int	fork_pipes (int n, t_command *cmd)
@@ -257,79 +247,3 @@ sig_t blank(int a)
 	write(1, "\n", 1);
 	return (NULL);
 }
-
-int	do_exec_commands(t_list *commands, char **redirections)
-{
-	pid_t	pid;
-	int		fd_input;
-	int		fd_output;
-
-	fd_input = -2;
-	fd_output = -2;
-	redirects_to_fds(redirections, &fd_input, &fd_output);
-	pid = fork();
-	if (pid == 0)
-	{	
-		dup2(fd_output, 1);
-		printf("hello world\n");
-		close(fd_output);
-	}
-	return (0);
-}
-
-int
-	exec_from_tokens(char **tokens)
-{
-	t_list	*lst;
-	char	**pure_tokens;
-	char	**redirections;
-
-	pure_tokens = get_pure_tokens(tokens);
-	lst = parse_list(pure_tokens);
-	print_cmd_lst(lst);
-
-	redirections = extract_redirects(tokens);
-	print_argv(redirections);
-	do_exec_commands(lst, redirections);
-	return (0);
-}
-
-int
-	main(int ac, char *argv[])
-{
-	//char *tokens_pipe[] = {"echo", "hello", "world", "|", "grep", "world", NULL};
-	char *tokens_redir[] = {"echo", "hello", "world", ">>", "text.txt", NULL};
-	//char *tokens_mult_redir[] = {"echo", "hello", "world", ">", "text.txt", ">", "text2.txt", ">", "text3.txt", "<", "input.txt", NULL};
-	//char *tokens_redir_middle[] = {"echo", "hello", ">", "fuck me", "<", "kill me", "world", ">", "text.txt", ">", "text2.txt", ">", "text3.txt", "<", "input.txt", NULL};
-
-	//char *tokens_mega[] = {"echo", "hello", "world", "|", "grep", "world", "|", "grep", "-o", "wo", ">", "text.txt", NULL};
-	//char *tokens_mega1[] = {"echo", "hello", "world", "|", "grep", "world", "|", "grep", "-o", "wo", ">", "text1.txt", ">", "text2.txt", ">", "text3.txt", NULL};
-	//char *tokens1[] = {"echo", "hello", "world", NULL};
-
-	
-	(void)ac;
-	(void)argv;
-	
-	exec_from_tokens(argv + 1);
-	//tokens = tokens_redir;
-
-	return (0);
-}
-
-/*
-int main(void)
-{
-	t_command	command;
-	pid_t		pid;
-
-	command.argv = (char *[]){"cat", NULL};
- 	command.cmd = "/bin/cat";
-	command.fd_input = 0;
-	command.fd_output = 1;
-	pid = exec_command(&command);
-	while (kill(pid, 0) == 0)
-		;
-	return (0);
-}
-*/
-
