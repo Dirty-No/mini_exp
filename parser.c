@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/01 13:16:41 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/16 15:36:23 by smaccary         ###   ########.fr       */
+/*   Updated: 2021/02/16 21:23:51 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ t_command
 	t_command	*new;
 
 	new = malloc(sizeof(t_command));
-	*new = (t_command){cmd, argv, sep, 0, 1};
+	*new = (t_command){cmd, argv, sep, 1, 0};
 	return (new);
 }
 
