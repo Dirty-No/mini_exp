@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/01 13:16:41 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/16 21:23:51 by root             ###   ########.fr       */
+/*   Updated: 2021/02/16 22:50:18 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,7 +236,9 @@ int
 	if (input_path_ptr && *input_path_ptr && *(input_path_ptr + 1) && !is_sep(*(input_path_ptr + 1)))
 	{
 		mode |= INPUT_REDIRECT_MASK;
-		*fd_input = open(*(input_path_ptr + 1), O_RDONLY);
+		*fd_input = open(input_path_ptr[1], O_RDONLY);
+		if (*fd_input < 0)
+			printf("%s : %s: %s\n", SHELL_NAME, strerror(errno), input_path_ptr[1]);
 	}
 	return (mode);
 }

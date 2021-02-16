@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/28 14:57:30 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/16 22:23:22 by root             ###   ########.fr       */
+/*   Updated: 2021/02/16 22:55:51 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,11 @@
 # include <fcntl.h>
 # include <signal.h>
 # include <string.h>
+# include <errno.h>
 # include "libft.h"
+
+# define SHELL_NAME "minishell"
+# define CMD_NOT_FOUND_MSG "command not found"
 
 # define REDIR_REPLACE ">"
 # define REDIR_APPEND ">>"

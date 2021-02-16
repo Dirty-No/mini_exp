@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/16 15:16:56 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/16 22:29:24 by root             ###   ########.fr       */
+/*   Updated: 2021/02/16 22:57:52 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int
 		dup2_check(command->fd_input, 0);
 		dup2_check(command->fd_output, 1);
 		pid = execve(command->cmd, command->argv, environ);
-		perror("minishell: ");
+		printf("%s : %s : %s\n", SHELL_NAME, strerror(errno), command->cmd);
 	}
 	close(command->fd_input);
 	close(command->fd_output);
