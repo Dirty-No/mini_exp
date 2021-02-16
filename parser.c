@@ -6,25 +6,11 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/01 13:16:41 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/15 14:05:51 by smaccary         ###   ########.fr       */
+/*   Updated: 2021/02/16 15:17:58 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
-
-size_t
-	get_argv_len(char **tokens);
-
-size_t
-	tab_size(char **table)
-{
-	char **current;
-
-	current = table;
-	while (*current)
-		current++;
-	return (current - table);		
-}
 
 t_command
 	*new_command(char *cmd, char **argv, char *sep)
@@ -41,117 +27,6 @@ t_command
 {
 	return (new_command(ft_strdup(argv[0]), argv, sep));
 }
-
-char
-	**find_token(char *token, char **tokens_table)
-{
-	ssize_t i;
-
-	i = -1;
-	if (!token)
-		return (tokens_table + get_argv_len(tokens_table));
-	while (tokens_table[++i])
-	{
-		if (ft_strcmp(tokens_table[i], token) == 0)
-			return (tokens_table + i);
-	}
-	return (NULL);
-}
-
-char
-	**find_last_token(char *token, char **tokens_table)
-{
-	ssize_t i;
-	char	**last;
-
-	i = -1;
-	last = NULL;
-	if (!token)
-		return (tokens_table + get_argv_len(tokens_table));
-	while (tokens_table[++i])
-	{
-		if (ft_strcmp(tokens_table[i], token) == 0)
-			last = tokens_table + i;
-	}
-	return (last);
-}
-
-char
-	**tab_find_last_token(char **tokens, char **tokens_table)
-{
-	ssize_t i;
-	char	**last;
-	char	**current;
-
-	i = -1;
-	last = NULL;
-	while (tokens[++i])
-	{
-		current = find_last_token(tokens[i], tokens_table);
-		if (current > last)
-			last = current;
-	}
-	return (last);
-}
-
-int
-	is_sep(char *token)
-{
-	return ((int)find_token(token, SEPARATORS));
-}
-
-char
-	**find_sep(char **tokens)
-{
-	char **current;
-	
-	current = tokens;
-	while (!is_sep(*current))
-		current++;
-	return (current);
-}
-
-size_t
-	get_argv_len(char **tokens)
-{
-	return (find_sep(tokens) - tokens);
-}
-
-char
-	**dup_n_tab(char **table, size_t n)
-{
-	char	**dup;
-	int		size;
-	int		i;
-
-	size = tab_size(table);
-	if (n < size)
-		size = n;
-	dup = ft_calloc(sizeof(char *), size + 1);
-	i = -1;
-	while (++i < size)
-		dup[i] = ft_strdup(table[i]);
-	return (dup);
-}
-
-int
-	count_cmd(char **tokens)
-{
-	int		count;
-	char	**current;
-
-	current = tokens;
-	count = 1;
-	while (*current)
-	{
-		if (is_sep(*current))
-			count++;
-		current++;	
-	}
-	return (count);
-}
-
-
 
 t_command
 	*get_next_command(char **tokens)
@@ -232,45 +107,7 @@ int main(void)
 }
 */
 
-void
-	print_argv(char **argv)
-{
-	printf("%p -> ", argv);
-	if (argv && *argv)
-	{
-		printf("%s", "{");
-		while (*argv)
-		{
-			printf("\"%s\"", *argv);
-			argv++;
-			if (*argv)
-				printf("%s", ", ");
-		}
-		printf("%s", "}\n");
-	}	
-	fflush(stdout);
-}
 
-void
-	print_command(t_command *command)
-{
-	printf("%p:\n", command);
-	if (command)
-	{
-		printf("  - %-10s\"%s\"\n", "cmd:", command->cmd);
-		printf("  - %-10s", "argv:");
-		print_argv(command->argv);
-		printf("  - %-10s%d\n  - %-10s%d\n", "input:", command->fd_input, "output:", command->fd_output);
-		printf("  - %-10s\"%s\"\n\n", "sep:", command->sep);
-	}
-	fflush(stdout);
-}
-
-void
-	print_cmd_lst(t_list *lst)
-{
-	ft_lstiter(lst, (void *)print_command);
-}
 
 int	is_redirect(char *token)
 {
@@ -421,6 +258,42 @@ sig_t blank(int a)
 	return (NULL);
 }
 
+int	do_exec_commands(t_list *commands, char **redirections)
+{
+	pid_t	pid;
+	int		fd_input;
+	int		fd_output;
+
+	fd_input = -2;
+	fd_output = -2;
+	redirects_to_fds(redirections, &fd_input, &fd_output);
+	pid = fork();
+	if (pid == 0)
+	{	
+		dup2(fd_output, 1);
+		printf("hello world\n");
+		close(fd_output);
+	}
+	return (0);
+}
+
+int
+	exec_from_tokens(char **tokens)
+{
+	t_list	*lst;
+	char	**pure_tokens;
+	char	**redirections;
+
+	pure_tokens = get_pure_tokens(tokens);
+	lst = parse_list(pure_tokens);
+	print_cmd_lst(lst);
+
+	redirections = extract_redirects(tokens);
+	print_argv(redirections);
+	do_exec_commands(lst, redirections);
+	return (0);
+}
+
 int
 	main(int ac, char *argv[])
 {
@@ -432,31 +305,14 @@ int
 	//char *tokens_mega[] = {"echo", "hello", "world", "|", "grep", "world", "|", "grep", "-o", "wo", ">", "text.txt", NULL};
 	//char *tokens_mega1[] = {"echo", "hello", "world", "|", "grep", "world", "|", "grep", "-o", "wo", ">", "text1.txt", ">", "text2.txt", ">", "text3.txt", NULL};
 	//char *tokens1[] = {"echo", "hello", "world", NULL};
-	t_list	*lst;
-	char	**tokens;
-	char	**pure_tokens;
-	char	**redirections;
-	int		fd_input = -2;
-	int		fd_output = -2;
+
 	
 	(void)ac;
 	(void)argv;
 	
-	tokens = argv + 1;
+	exec_from_tokens(argv + 1);
 	//tokens = tokens_redir;
-	pure_tokens = get_pure_tokens(tokens);
-	lst = parse_list(pure_tokens);
-	print_cmd_lst(lst);
 
-	redirections = extract_redirects(tokens);
-	
-	print_argv(redirections);
-	
-	redirects_to_fds(redirections, &fd_input, &fd_output);
-
-	dup2(fd_output, 1);
-	printf("hello world\n");
-	close(fd_output);
 	return (0);
 }
 
@@ -467,7 +323,7 @@ int main(void)
 	pid_t		pid;
 
 	command.argv = (char *[]){"cat", NULL};
-vi 	command.cmd = "/bin/cat";
+ 	command.cmd = "/bin/cat";
 	command.fd_input = 0;
 	command.fd_output = 1;
 	pid = exec_command(&command);
