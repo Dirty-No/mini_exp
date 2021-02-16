@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/28 14:57:30 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/16 15:40:19 by smaccary         ###   ########.fr       */
+/*   Updated: 2021/02/16 22:23:22 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <unistd.h>
 # include <fcntl.h>
 # include <signal.h>
+# include <string.h>
 # include "libft.h"
 
 # define REDIR_REPLACE ">"
@@ -34,6 +35,10 @@
 # define OUTPUT_REPLACE_MASK 0b001
 # define OUTPUT_APPEND_MASK  0b010
 # define INPUT_REDIRECT_MASK 0b100
+
+# ifndef DEBUG
+#  define DEBUG 0
+# endif
 
 typedef struct	s_command
 {

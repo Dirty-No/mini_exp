@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/16 15:35:46 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/16 21:25:07 by root             ###   ########.fr       */
+/*   Updated: 2021/02/16 22:38:04 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,14 @@ int
 	//char *tokens_mega[] = {"echo", "hello", "world", "|", "grep", "world", "|", "grep", "-o", "wo", ">", "text.txt", NULL};
 	//char *tokens_mega1[] = {"echo", "hello", "world", "|", "grep", "world", "|", "grep", "-o", "wo", ">", "text1.txt", ">", "text2.txt", ">", "text3.txt", NULL};
 	//char *tokens1[] = {"echo", "hello", "world", NULL};
-	char	*exec_tokens[] = {"/bin/echo", "hello", "world", "|", "/bin/grep", "-o", "world", NULL};
+	//char	*exec_tokens[] = {"/bin/echo", "hello", "world", "|", "/bin/grep", "-o", "world", NULL};
+	char 	*absolute_pipes_tokens[] = {"/bin/echo", "hello", "world", "|", "/bin/grep", "-o", "world", "|", "/bin/grep", "-o", "wo", "|", "/bin/grep", "-o", "w", NULL};
 	
 	(void)ac;
 	(void)argv;
 	
-	exec_from_tokens(exec_tokens);
+	exec_from_tokens(argv + 1);
+	//exec_from_tokens(absolute_pipes_tokens);
 	//tokens = tokens_redir;
 
 	return (0);

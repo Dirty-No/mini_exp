@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   debug_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/16 15:15:38 by smaccary          #+#    #+#             */
-/*   Updated: 2021/02/16 15:16:28 by smaccary         ###   ########.fr       */
+/*   Updated: 2021/02/16 21:31:37 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 void
 	print_argv(char **argv)
 {
+	if (!DEBUG)
+		return ;
 	printf("%p -> ", argv);
 	if (argv && *argv)
 	{
@@ -34,6 +36,8 @@ void
 void
 	print_command(t_command *command)
 {
+	if (!DEBUG)
+		return ;
 	printf("%p:\n", command);
 	if (command)
 	{
@@ -49,5 +53,7 @@ void
 void
 	print_cmd_lst(t_list *lst)
 {
+	if (!DEBUG)
+		return ;
 	ft_lstiter(lst, (void *)print_command);
 }
